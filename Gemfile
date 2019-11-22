@@ -3,5 +3,6 @@
 source 'https://rubygems.org'
 
 gem 'byebug'
-gem 'selenium-webdriver'
 gem 'retriable'
+gem 'rubocop'
+gem 'selenium-webdriver'
