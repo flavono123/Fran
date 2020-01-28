@@ -27,14 +27,7 @@ class CgvCrawler
     "l/li/a[text()='시네마톡']",
     area_list: "//div[@class='theater-area-list']/ul/li/a",
     theater_list: "//div[@class='theater-area-list']/ul/li[@class='selected']/"\
-    "div[@class='area_theater_list nano']/ul/li[not(@class='dimmed')]/a",
-    btn_available_dates: "//div[@class='section section-date']/div[@class='col"\
-    "-body']/div[@class='date-list nano']/ul/div/li[not(contains(@class, 'dimm"\
-    "ed'))]/a",
-    # TODO: +
-    time_table: "//div[@class='section section-time']/div[@class='col-body']/d"\
-    "iv[@class='time-list nano']" # TODO: + "/div/div[@class='theater']" seemed
-    # it has multiple of 👆
+    "div[@class='area_theater_list nano']/ul/li[not(@class='dimmed')]/a"
   }.freeze
 
   # TODO: caller of a crawler
@@ -81,11 +74,11 @@ class CgvCrawler
     btn_theaters = find(XPATHS[:theater_list], multiple: true)
     btn_theaters.each do |btn_theater| # XXX: O(N^2) 😱
       btn_theater.click
-      btn_available_dates = crawl_available_dates
+      btn_available_dates = parse_available_dates
       btn_available_dates.each do |btn_available_date|
         sleep 1 # HACK
         btn_available_date.click
-        puts crawl_time_table
+        puts parse_time_table
       end
     end
   end
@@ -98,6 +91,15 @@ class CgvCrawler
     parser.parse_cinematalk_movies
   end
 
+  def parse_available_dates
+    parser.parse_available_dates
+  end
+
+  def parse_time_table
+    parser.parse_time_table
+  end
+
+  # TODO: remove when parser fully using
   def find(xpath, multiple: false)
     wait.until do
       if multiple
@@ -153,13 +155,5 @@ class CgvCrawler
         a.find_element(:xpath, "./span[@class='name']").text
       end
     end.compact
-  end
-
-  def crawl_available_dates
-    find(XPATHS[:btn_available_dates], multiple: true)
-  end
-
-  def crawl_time_table
-    find(XPATHS[:time_table]).text
   end
 end
