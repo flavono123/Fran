@@ -3,12 +3,15 @@
 require 'selenium-webdriver'
 require 'retriable'
 
+require_relative '../parsers/cgv_parser'
+
 class CgvCrawler
   class NoCinematalkMovies < StandardError; end
 
   def initialize
     @driver = Selenium::WebDriver.for :chrome
     @wait = Selenium::WebDriver::Wait.new(timeout: 10)
+    @parser = CgvParser.new(driver, wait)
   end
 
   URL = 'http://ticket.cgv.co.kr/Reservation/Reservation.aspx?MOVIE_CD=&MOVIE_'\
@@ -89,7 +92,11 @@ class CgvCrawler
 
   private
 
-  attr_reader :driver, :wait
+  attr_reader :driver, :wait, :parser
+
+  def parse_cinematalk_movies
+    parser.parse_cinematalk_movies
+  end
 
   def find(xpath, multiple: false)
     wait.until do
@@ -130,10 +137,7 @@ class CgvCrawler
     click(btn_cinematalk)
 
     Retriable.retriable(tries: 3, on: [NoCinematalkMovies]) do
-      cinematalk_movie_list = find(
-        XPATHS[:cinematalk_movie_list],
-        multiple: true
-      )
+      cinematalk_movie_list = parse_cinematalk_movies
       raise NoCinematalkMovies if cinematalk_movie_list.empty?
 
       cinematalk_movie_list
