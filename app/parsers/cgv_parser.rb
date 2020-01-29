@@ -35,12 +35,8 @@ class CgvParser
     find(XPATHS[:btn_available_dates], multiple: true)
   end
 
-  def parse_time_table
-    find(XPATHS[:time_table]).text
-  end
-
-  def parse_movie(name)
-    find(XPATHS[:cinematalk_movie][name])
+  def pase_theaters
+    find(XPATHS[:theater_list], multiple: true)
   end
 
   def parse_cinematalk_movie_popup
@@ -51,16 +47,20 @@ class CgvParser
     find(XPATHS[:btn_seoul])
   end
 
-  def pase_theaters
-    find(XPATHS[:theater_list], multiple: true)
-  end
-
   def parse_art_house
     find(XPATHS[:btn_arthouse])
   end
 
   def parse_cinematalk
     find(XPATHS[:btn_cinematalk])
+  end
+
+  def parse_time_table
+    find(XPATHS[:time_table]).text
+  end
+
+  def parse_movie(name)
+    find(XPATHS[:cinematalk_movie][name])
   end
 
   private
