@@ -8,15 +8,15 @@ class CgvParser
   end
 
   XPATHS = {
-    cinematalk_movie_list: "//div[@class='movie-list nano']/ul/li",
-    btn_available_dates: "//div[@class='section section-date']/div[@class='col"\
+    cinematalk_movies: "//div[@class='movie-list nano']/ul/li",
+    available_dates: "//div[@class='section section-date']/div[@class='col"\
     "-body']/div[@class='date-list nano']/ul/div/li[not(contains(@class, 'dimm"\
     "ed'))]/a",
     cinematalk_movie_popup: "//div[@class='selectbox-movie-type checkedBD']/u"\
     "l/li/a[text()='시네마톡']",
     cinematalk_movie: proc { |name| "//div[@class='movie-list nano']/ul/li/a/span[contains(text(), '#{name}')]" },
     seoul: "//div[@class='theater-area-list']/ul/li/a/span[contains(text(), '서울')]",
-    theater_list: "//div[@class='theater-area-list']/ul/li[@class='selected']/"\
+    theaters: "//div[@class='theater-area-list']/ul/li[@class='selected']/"\
     "div[@class='area_theater_list nano']/ul/li[not(@class='dimmed')]/a",
     time_table: "//div[@class='section section-time']/div[@class='col-body']/d"\
     "iv[@class='time-list nano']", # TODO: + "/div/div[@class='theater']" seemed
@@ -28,15 +28,15 @@ class CgvParser
   }.freeze
 
   def parse_cinematalk_movies
-    find(XPATHS[:cinematalk_movie_list], multiple: true)
+    find(XPATHS[:cinematalk_movies], multiple: true)
   end
 
   def parse_available_dates
-    find(XPATHS[:btn_available_dates], multiple: true)
+    find(XPATHS[:available_dates], multiple: true)
   end
 
   def pase_theaters
-    find(XPATHS[:theater_list], multiple: true)
+    find(XPATHS[:theaters], multiple: true)
   end
 
   def parse(element)

@@ -70,6 +70,10 @@ class CgvCrawler
     parser.parse_available_dates
   end
 
+  def parse_theaters
+    parser.pase_theaters
+  end
+
   def parse_time_table
     parser.parse_time_table
   end
@@ -78,9 +82,6 @@ class CgvCrawler
     parser.parse_movie(name)
   end
 
-  def parse_theaters
-    parser.pase_theaters
-  end
 
   def click(element)
     Retriable.retriable(
