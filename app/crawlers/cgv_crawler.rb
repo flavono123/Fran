@@ -7,7 +7,7 @@ require_relative '../parsers/cgv_parser'
 
 class CgvCrawler
   def initialize
-    @driver = Selenium::WebDriver.for :chrome
+    @driver = Selenium::WebDriver.for(:chrome)
     @wait = Selenium::WebDriver::Wait.new(timeout: 10)
     @parser = CgvParser.new(driver, wait)
   end
@@ -32,11 +32,9 @@ class CgvCrawler
 
     click(parse(:seoul))
 
-    btn_theaters = parse(:theaters, multiple: true)
-    btn_theaters.each do |btn_theater| # XXX: O(N^2) 😱
+    parse(:theaters, multiple: true).each do |btn_theater| # XXX: O(N^2) 😱
       click(btn_theater)
-      btn_available_dates = parse(:available_dates, multiple: true)
-      btn_available_dates.each do |btn_available_date|
+      parse(:available_dates, multiple: true).each do |btn_available_date|
         click(btn_available_date)
         puts parse_time_table
       end
@@ -69,7 +67,6 @@ class CgvCrawler
   def parse_movie(name)
     parser.parse_movie(name)
   end
-
 
   def click(element)
     Retriable.retriable(
