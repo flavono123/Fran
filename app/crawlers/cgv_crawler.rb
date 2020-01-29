@@ -46,11 +46,11 @@ class CgvCrawler
 
     movie_xpath = XPATHS[:cinematalk_movie_list] + "/a/span[contains(text(), '"\
     "#{name}')]"
-    click(parent(find(movie_xpath)))
+    click(find(movie_xpath))
 
     click(find(XPATHS[:btn_cinematalk_in_popup]))
 
-    click(parent(find(XPATHS[:btn_seoul])))
+    click(find(XPATHS[:btn_seoul]))
 
     btn_theaters = find(XPATHS[:theater_list], multiple: true)
     btn_theaters.each do |btn_theater| # XXX: O(N^2) 😱
@@ -110,14 +110,5 @@ class CgvCrawler
     ) do
       wait.until { element }.click
     end
-  end
-
-  def parent(element)
-    element.find_element(:xpath, './..')
-  end
-
-  def user_input_to_index
-    # TODO: a guard for out of range
-    gets.to_i - 1
   end
 end
