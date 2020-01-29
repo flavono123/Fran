@@ -27,20 +27,8 @@ class CgvParser
     "ntains(text(), '시네마톡')]"
   }.freeze
 
-  def parse_cinematalk_movies
-    find(XPATHS[:cinematalk_movies], multiple: true)
-  end
-
-  def parse_available_dates
-    find(XPATHS[:available_dates], multiple: true)
-  end
-
-  def pase_theaters
-    find(XPATHS[:theaters], multiple: true)
-  end
-
-  def parse(element)
-    find(XPATHS[element])
+  def parse(element, multiple:)
+    find(XPATHS[element], multiple: multiple)
   end
 
   def parse_time_table

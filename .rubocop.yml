@@ -7,8 +7,5 @@ Style/Documentation:
 Metrics/AbcSize:
   Max: 82 # TODO: remove; default 15
 
-Metrics/ClassLength:
-  Max: 119 # TODO: remove; default 100
-
 Metrics/MethodLength:
   Max: 40 # TODO: remove; default 10

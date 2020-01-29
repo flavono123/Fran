@@ -18,9 +18,9 @@ class CgvCrawler
     display_cinematalk_movies
 
     wait.until do
-      !parse_cinematalk_movies.empty?
+      !parse(:cinematalk_movies, multiple: true).empty?
     end
-    parse_cinematalk_movies.map { |li| li.text.strip }
+    parse(:cinematalk_movies, multiple: true).map { |li| li.text.strip }
   end
 
   def crawl_time_table(name)
@@ -32,10 +32,10 @@ class CgvCrawler
 
     click(parse(:seoul))
 
-    btn_theaters = parse_theaters
+    btn_theaters = parse(:theaters, multiple: true)
     btn_theaters.each do |btn_theater| # XXX: O(N^2) 😱
       click(btn_theater)
-      btn_available_dates = parse_available_dates
+      btn_available_dates = parse(:available_dates, multiple: true)
       btn_available_dates.each do |btn_available_date|
         click(btn_available_date)
         puts parse_time_table
@@ -58,20 +58,8 @@ class CgvCrawler
     click(btn_cinematalk)
   end
 
-  def parse(element)
-    parser.parse(element)
-  end
-
-  def parse_cinematalk_movies
-    parser.parse_cinematalk_movies
-  end
-
-  def parse_available_dates
-    parser.parse_available_dates
-  end
-
-  def parse_theaters
-    parser.pase_theaters
+  def parse(element, multiple: false)
+    parser.parse(element, multiple: multiple)
   end
 
   def parse_time_table
