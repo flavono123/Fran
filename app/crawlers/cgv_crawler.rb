@@ -64,26 +64,6 @@ class CgvCrawler
     end
   end
 
-  # TODO: caller of a crawler
-  def call
-    cinematalk_movie_list = crawl_cinematalk_movies
-    cinematalk_movies = cinematalk_movie_list.map { |li| li.text.strip }
-
-    if cinematalk_movies.empty?
-      puts '시네마톡 상영 중인 영화가 없습니다.'
-      return
-    else
-      puts '시네마톡 상영 중인 영화:'
-      cinematalk_movies.each.with_index(1) do |m, i|
-        puts "[#{i}] #{m}"
-      end
-    end
-
-    index = user_input_to_index
-
-    # TODO: a process that select a movie
-  end
-
   private
 
   attr_reader :driver, :wait, :parser
@@ -124,13 +104,11 @@ class CgvCrawler
   end
 
   def click(element)
-    wait.until { element }
-
     Retriable.retriable(
       tries: 5,
       on: [Selenium::WebDriver::Error::ElementClickInterceptedError]
     ) do
-      element.click
+      wait.until { element }.click
     end
   end
 
