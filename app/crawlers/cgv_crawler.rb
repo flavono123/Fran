@@ -5,10 +5,7 @@ require 'retriable'
 
 require_relative '../parsers/cgv_parser'
 
-# TODO: rename parser delegate methods; nounize (e.g. remove prefixes `parse_`)
 class CgvCrawler
-  class NoCinematalkMovies < StandardError; end
-
   def initialize
     @driver = Selenium::WebDriver.for :chrome
     @wait = Selenium::WebDriver::Wait.new(timeout: 10)
@@ -31,9 +28,9 @@ class CgvCrawler
 
     click(parse_movie(name))
 
-    click(parse_cinematalk_movie_popup)
+    click(parse(:cinematalk_movie_popup))
 
-    click(parse_seoul)
+    click(parse(:seoul))
 
     btn_theaters = parse_theaters
     btn_theaters.each do |btn_theater| # XXX: O(N^2) 😱
@@ -53,12 +50,16 @@ class CgvCrawler
   def display_cinematalk_movies
     driver.navigate.to(URL)
     # click the button '아트하우스'
-    btn_arthouse = parse_art_house
+    btn_arthouse = parse(:art_house)
     click(btn_arthouse)
 
     #  and '시네마톡'
-    btn_cinematalk = parse_cinematalk
+    btn_cinematalk = parse(:cinematalk)
     click(btn_cinematalk)
+  end
+
+  def parse(element)
+    parser.parse(element)
   end
 
   def parse_cinematalk_movies
@@ -77,24 +78,8 @@ class CgvCrawler
     parser.parse_movie(name)
   end
 
-  def parse_cinematalk_movie_popup
-    parser.parse_cinematalk_movie_popup
-  end
-
-  def parse_seoul
-    parser.parse_seoul
-  end
-
   def parse_theaters
     parser.pase_theaters
-  end
-
-  def parse_art_house
-    parser.parse_art_house
-  end
-
-  def parse_cinematalk
-    parser.parse_cinematalk
   end
 
   def click(element)

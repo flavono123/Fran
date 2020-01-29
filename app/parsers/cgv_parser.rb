@@ -12,18 +12,18 @@ class CgvParser
     btn_available_dates: "//div[@class='section section-date']/div[@class='col"\
     "-body']/div[@class='date-list nano']/ul/div/li[not(contains(@class, 'dimm"\
     "ed'))]/a",
-    btn_cinematalk_in_popup: "//div[@class='selectbox-movie-type checkedBD']/u"\
+    cinematalk_movie_popup: "//div[@class='selectbox-movie-type checkedBD']/u"\
     "l/li/a[text()='시네마톡']",
     cinematalk_movie: proc { |name| "//div[@class='movie-list nano']/ul/li/a/span[contains(text(), '#{name}')]" },
-    btn_seoul: "//div[@class='theater-area-list']/ul/li/a/span[contains(text(), '서울')]",
+    seoul: "//div[@class='theater-area-list']/ul/li/a/span[contains(text(), '서울')]",
     theater_list: "//div[@class='theater-area-list']/ul/li[@class='selected']/"\
     "div[@class='area_theater_list nano']/ul/li[not(@class='dimmed')]/a",
     time_table: "//div[@class='section section-time']/div[@class='col-body']/d"\
     "iv[@class='time-list nano']", # TODO: + "/div/div[@class='theater']" seemed
     # it has multiple of 👆
-    btn_arthouse: "//div[@class='movie-select']/div[@class='tabmenu']/a[contai"\
+    art_house: "//div[@class='movie-select']/div[@class='tabmenu']/a[contai"\
     "ns(@class, 'menu2')]",
-    btn_cinematalk: "//div[@class='tabmenu-selectbox MOVIECOLLAGE']/ul/li/a[co"\
+    cinematalk: "//div[@class='tabmenu-selectbox MOVIECOLLAGE']/ul/li/a[co"\
     "ntains(text(), '시네마톡')]"
   }.freeze
 
@@ -39,20 +39,8 @@ class CgvParser
     find(XPATHS[:theater_list], multiple: true)
   end
 
-  def parse_cinematalk_movie_popup
-    find(XPATHS[:btn_cinematalk_in_popup])
-  end
-
-  def parse_seoul
-    find(XPATHS[:btn_seoul])
-  end
-
-  def parse_art_house
-    find(XPATHS[:btn_arthouse])
-  end
-
-  def parse_cinematalk
-    find(XPATHS[:btn_cinematalk])
+  def parse(element)
+    find(XPATHS[element])
   end
 
   def parse_time_table
