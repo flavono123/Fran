@@ -32,6 +32,38 @@ class CgvCrawler
     "div[@class='area_theater_list nano']/ul/li[not(@class='dimmed')]/a"
   }.freeze
 
+  def crawl_cinematalk_movies
+    display_cinematalk_movies
+
+    wait.until do
+      !parse_cinematalk_movies.empty?
+    end
+    parse_cinematalk_movies.map { |li| li.text.strip }
+  end
+
+  def crawl_time_table(name)
+    display_cinematalk_movies
+
+    movie_xpath = XPATHS[:cinematalk_movie_list] + "/a/span[contains(text(), '"\
+    "#{name}')]"
+    click(parent(find(movie_xpath)))
+
+    click(find(XPATHS[:btn_cinematalk_in_popup]))
+
+    click(parent(find(XPATHS[:btn_seoul])))
+
+    btn_theaters = find(XPATHS[:theater_list], multiple: true)
+    btn_theaters.each do |btn_theater| # XXX: O(N^2) 😱
+      click(btn_theater)
+      btn_available_dates = parse_available_dates
+      btn_available_dates.each do |btn_available_date|
+        sleep 1 # HACK
+        click(btn_available_date)
+        puts parse_time_table
+      end
+    end
+  end
+
   # TODO: caller of a crawler
   def call
     cinematalk_movie_list = crawl_cinematalk_movies
@@ -50,34 +82,23 @@ class CgvCrawler
     index = user_input_to_index
 
     # TODO: a process that select a movie
-    movie_xpath = XPATHS[:cinematalk_movie_list] + "/a/span[contains(text(), '"\
-    "#{cinematalk_movies[index]}')]"
-    btn_movie = parent(find(movie_xpath))
-    btn_movie.click
-
-    btn_cinematalk_in_popup = find(XPATHS[:btn_cinematalk_in_popup])
-    sleep(1) # HACK: Retriable cannot cover an unclickable situation
-    btn_cinematalk_in_popup.click
-
-    area_path = XPATHS[:btn_seoul] 
-    btn_area = parent(find(area_path))
-    btn_area.click # OPT: do not have to click if parent li is selected
-
-    btn_theaters = find(XPATHS[:theater_list], multiple: true)
-    btn_theaters.each do |btn_theater| # XXX: O(N^2) 😱
-      btn_theater.click
-      btn_available_dates = parse_available_dates
-      btn_available_dates.each do |btn_available_date|
-        sleep 1 # HACK
-        btn_available_date.click
-        puts parse_time_table
-      end
-    end
   end
 
   private
 
   attr_reader :driver, :wait, :parser
+
+  def display_cinematalk_movies
+    driver.navigate.to(URL)
+    # click the button '아트하우스'
+    btn_arthouse = find(XPATHS[:btn_arthouse])
+    click(btn_arthouse)
+
+    #  and '시네마톡'
+    btn_cinematalk = find(XPATHS[:btn_cinematalk])
+    click(btn_cinematalk)
+
+  end
 
   def parse_cinematalk_movies
     parser.parse_cinematalk_movies
@@ -103,6 +124,8 @@ class CgvCrawler
   end
 
   def click(element)
+    wait.until { element }
+
     Retriable.retriable(
       tries: 5,
       on: [Selenium::WebDriver::Error::ElementClickInterceptedError]
@@ -118,21 +141,5 @@ class CgvCrawler
   def user_input_to_index
     # TODO: a guard for out of range
     gets.to_i - 1
-  end
-
-  def crawl_cinematalk_movies
-    driver.navigate.to(URL)
-    # click the button '아트하우스'
-    btn_arthouse = find(XPATHS[:btn_arthouse])
-    click(btn_arthouse)
-
-    #  and '시네마톡'
-    btn_cinematalk = find(XPATHS[:btn_cinematalk])
-    click(btn_cinematalk)
-
-    wait.until do
-      !parse_cinematalk_movies.empty?
-    end
-    parse_cinematalk_movies
   end
 end
