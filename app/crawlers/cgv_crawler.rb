@@ -5,6 +5,7 @@ require 'retriable'
 
 require_relative '../parsers/cgv_parser'
 
+# TODO: rename parser delegate methods; nounize (e.g. remove prefixes `parse_`)
 class CgvCrawler
   class NoCinematalkMovies < StandardError; end
 
@@ -18,19 +19,6 @@ class CgvCrawler
   URL = 'http://ticket.cgv.co.kr/Reservation/Reservation.aspx?MOVIE_CD=&MOVIE_'\
   'CD_GROUP=&PLAY_YMD=&THEATER_CD=&PLAY_NUM=&PLAY_START_TM=&AREA_CD=&SCREEN_CD'\
   '=&THIRD_ITEM=#'
-  XPATHS = {
-    btn_arthouse: "//div[@class='movie-select']/div[@class='tabmenu']/a[contai"\
-    "ns(@class, 'menu2')]",
-    btn_cinematalk: "//div[@class='tabmenu-selectbox MOVIECOLLAGE']/ul/li/a[co"\
-    "ntains(text(), '시네마톡')]",
-    cinematalk_movie_list: "//div[@class='movie-list nano']/ul/li",
-    btn_cinematalk_in_popup: "//div[@class='selectbox-movie-type checkedBD']/u"\
-    "l/li/a[text()='시네마톡']",
-    btn_seoul: "//div[@class='theater-area-list']/ul/li/a/span[contains(text(), '서울')]",
-    area_list: "//div[@class='theater-area-list']/ul/li/a",
-    theater_list: "//div[@class='theater-area-list']/ul/li[@class='selected']/"\
-    "div[@class='area_theater_list nano']/ul/li[not(@class='dimmed')]/a"
-  }.freeze
 
   def crawl_cinematalk_movies
     display_cinematalk_movies
@@ -44,15 +32,13 @@ class CgvCrawler
   def crawl_time_table(name)
     display_cinematalk_movies
 
-    movie_xpath = XPATHS[:cinematalk_movie_list] + "/a/span[contains(text(), '"\
-    "#{name}')]"
-    click(find(movie_xpath))
+    click(parse_movie(name))
 
-    click(find(XPATHS[:btn_cinematalk_in_popup]))
+    click(parse_cinematalk_movie_popup)
 
-    click(find(XPATHS[:btn_seoul]))
+    click(parse_seoul)
 
-    btn_theaters = find(XPATHS[:theater_list], multiple: true)
+    btn_theaters = parse_theaters
     btn_theaters.each do |btn_theater| # XXX: O(N^2) 😱
       click(btn_theater)
       btn_available_dates = parse_available_dates
@@ -71,13 +57,12 @@ class CgvCrawler
   def display_cinematalk_movies
     driver.navigate.to(URL)
     # click the button '아트하우스'
-    btn_arthouse = find(XPATHS[:btn_arthouse])
+    btn_arthouse = parse_art_house
     click(btn_arthouse)
 
     #  and '시네마톡'
-    btn_cinematalk = find(XPATHS[:btn_cinematalk])
+    btn_cinematalk = parse_cinematalk
     click(btn_cinematalk)
-
   end
 
   def parse_cinematalk_movies
@@ -92,15 +77,28 @@ class CgvCrawler
     parser.parse_time_table
   end
 
-  # TODO: remove when parser fully using
-  def find(xpath, multiple: false)
-    wait.until do
-      if multiple
-        driver.find_elements(:xpath, xpath)
-      else
-        driver.find_element(:xpath, xpath)
-      end
-    end
+  def parse_movie(name)
+    parser.parse_movie(name)
+  end
+
+  def parse_cinematalk_movie_popup
+    parser.parse_cinematalk_movie_popup
+  end
+
+  def parse_seoul
+    parser.parse_seoul
+  end
+
+  def parse_theaters
+    parser.pase_theaters
+  end
+
+  def parse_art_house
+    parser.parse_art_house
+  end
+
+  def parse_cinematalk
+    parser.parse_cinematalk
   end
 
   def click(element)
