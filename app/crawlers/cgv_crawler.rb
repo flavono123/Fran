@@ -32,10 +32,10 @@ class CgvCrawler
 
     click(parse(:seoul))
 
-    parse(:theaters, multiple: true).each do |btn_theater| # XXX: O(N^2) 😱
-      click(btn_theater)
-      parse(:available_dates, multiple: true).each do |btn_available_date|
-        click(btn_available_date)
+    parse(:theaters, multiple: true).each do |theater| # XXX: O(N^2) 😱
+      click(theater)
+      parse(:available_dates, multiple: true).each do |available_date|
+        click(available_date)
         puts parse_time_table
       end
     end
@@ -47,13 +47,10 @@ class CgvCrawler
 
   def display_cinematalk_movies
     driver.navigate.to(URL)
-    # click the button '아트하우스'
-    btn_arthouse = parse(:art_house)
-    click(btn_arthouse)
 
-    #  and '시네마톡'
-    btn_cinematalk = parse(:cinematalk)
-    click(btn_cinematalk)
+    click(parse(:art_house))
+
+    click(parse(:cinematalk))
   end
 
   def parse(element, multiple: false)
