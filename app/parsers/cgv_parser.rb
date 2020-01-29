@@ -16,7 +16,7 @@ class CgvParser
     theaters: "//div[@class='theater-area-list']/ul/li[@class='selected']/div[@class='area_theater_list nano']/ul/li[not(@class='dimmed')]/a",
     time_table: "//div[@class='section section-time']/div[@class='col-body']/div[@class='time-list nano']", # TODO: + "/div/div[@class='theater']" seemed
     # it has multiple of 👆
-    art_house: "//div[@class='movie-select']/div[@class='tabmenu']/a[contains(@class, 'menu2')]",
+    arthouse: "//div[@class='movie-select']/div[@class='tabmenu']/a[contains(@class, 'menu2')]",
     cinematalk: "//div[@class='tabmenu-selectbox MOVIECOLLAGE']/ul/li/a[contains(text(), '시네마톡')]"
   }.freeze
 

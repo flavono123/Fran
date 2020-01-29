@@ -48,7 +48,7 @@ class CgvCrawler
   def display_cinematalk_movies
     driver.navigate.to(URL)
 
-    click(parse(:art_house))
+    click(parse(:arthouse))
 
     click(parse(:cinematalk))
   end
