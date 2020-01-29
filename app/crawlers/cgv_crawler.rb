@@ -10,6 +10,7 @@ class CgvCrawler
 
   def initialize
     @driver = Selenium::WebDriver.for :chrome
+    driver.manage.timeouts.page_load = 10
     @wait = Selenium::WebDriver::Wait.new(timeout: 10)
     @parser = CgvParser.new(driver, wait)
   end
@@ -25,6 +26,7 @@ class CgvCrawler
     cinematalk_movie_list: "//div[@class='movie-list nano']/ul/li",
     btn_cinematalk_in_popup: "//div[@class='selectbox-movie-type checkedBD']/u"\
     "l/li/a[text()='시네마톡']",
+    btn_seoul: "//div[@class='theater-area-list']/ul/li/a/span[contains(text(), '서울')]",
     area_list: "//div[@class='theater-area-list']/ul/li/a",
     theater_list: "//div[@class='theater-area-list']/ul/li[@class='selected']/"\
     "div[@class='area_theater_list nano']/ul/li[not(@class='dimmed')]/a"
@@ -57,17 +59,7 @@ class CgvCrawler
     sleep(1) # HACK: Retriable cannot cover an unclickable situation
     btn_cinematalk_in_popup.click
 
-    available_area_name_list = crawl_areas
-
-    movie_name = btn_movie.text
-    puts "#{movie_name} 상영관이 있는 지역:"
-    available_area_name_list.each.with_index(1) do |m, i|
-      puts "[#{i}] #{m}"
-    end
-
-    index = user_input_to_index
-    area_path = XPATHS[:area_list] + "/span[contains(text(), '"\
-    "#{available_area_name_list[index]}')]"
+    area_path = XPATHS[:btn_seoul] 
     btn_area = parent(find(area_path))
     btn_area.click # OPT: do not have to click if parent li is selected
 
@@ -138,22 +130,9 @@ class CgvCrawler
     btn_cinematalk = find(XPATHS[:btn_cinematalk])
     click(btn_cinematalk)
 
-    Retriable.retriable(tries: 3, on: [NoCinematalkMovies]) do
-      cinematalk_movie_list = parse_cinematalk_movies
-      raise NoCinematalkMovies if cinematalk_movie_list.empty?
-
-      cinematalk_movie_list
+    wait.until do
+      !parse_cinematalk_movies.empty?
     end
-  end
-
-  def crawl_areas
-    area_list = find(XPATHS[:area_list], multiple: true)
-    area_list.map do |a|
-      hit = a.find_element(:xpath, "./span[@class='count']")
-             .text.match(/\((?<count>\d)\)/)
-      if hit && hit[:count] != '0'
-        a.find_element(:xpath, "./span[@class='name']").text
-      end
-    end.compact
+    parse_cinematalk_movies
   end
 end
