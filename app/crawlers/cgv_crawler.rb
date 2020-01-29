@@ -11,14 +11,11 @@ class CgvCrawler
 
   def initialize
     @driver = Selenium::WebDriver.for :chrome
-    driver.manage.timeouts.page_load = 10
     @wait = Selenium::WebDriver::Wait.new(timeout: 10)
     @parser = CgvParser.new(driver, wait)
   end
 
-  URL = 'http://ticket.cgv.co.kr/Reservation/Reservation.aspx?MOVIE_CD=&MOVIE_'\
-  'CD_GROUP=&PLAY_YMD=&THEATER_CD=&PLAY_NUM=&PLAY_START_TM=&AREA_CD=&SCREEN_CD'\
-  '=&THIRD_ITEM=#'
+  URL = 'http://ticket.cgv.co.kr/Reservation/Reservation.aspx'
 
   def crawl_cinematalk_movies
     display_cinematalk_movies
@@ -43,7 +40,6 @@ class CgvCrawler
       click(btn_theater)
       btn_available_dates = parse_available_dates
       btn_available_dates.each do |btn_available_date|
-        sleep 1 # HACK
         click(btn_available_date)
         puts parse_time_table
       end
