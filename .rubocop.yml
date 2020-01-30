@@ -5,9 +5,8 @@ Style/Documentation:
   Enabled: false
 
 Metrics/LineLength:
-  Enabled: false
-  # IgnorePatterns:
-  # - ('|").*('|") # just strings!
+  IgnoredPatterns:
+  - ('|").*('|") # just strings!
 
 Metrics/MethodLength:
   Max: 11 # TODO: remove; default 10
